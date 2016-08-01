@@ -61,6 +61,7 @@ void get_M0_data(void*p){
 
 void *tackle_msg(void*puart_fd){
 	int ret = 0;
+	int i = 0;
 	struct msg_element msg_ele;
 	while(1){
 		ret = msgrcv(msgid, &msg_ele, MSGSZ, 1,0);
@@ -68,11 +69,14 @@ void *tackle_msg(void*puart_fd){
 			perror("msgrcv fail");
 			return ((void*)(-1));
 		}
-		ret = uart_send(*((int*)puart_fd), ((char*)&msg_ele.msg),MSGSZ);
-		if(-1 == ret){
-			perror("puart_fd fail");
-			return ((void*)(-1));
+		for(i = 3; i >= 0;i--){
+			ret = uart_send(*((int*)puart_fd), ((char*)&msg_ele.msg[i]),MSGSZ);
+			if(-1 == ret){
+				perror("puart_fd fail");
+				return ((void*)(-1));
+			}
 		}
+
 		
 	}
 
