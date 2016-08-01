@@ -69,8 +69,12 @@ void *tackle_msg(void*puart_fd){
 			perror("msgrcv fail");
 			return ((void*)(-1));
 		}
+
 		for(i = 3; i >= 0;i--){
-			ret = uart_send(*((int*)puart_fd), ((char*)&msg_ele.msg[i]),MSGSZ);
+#ifdef DEBUG2
+			fprintf(stderr,"msg[%d] = %x\n",i,(int)(((char*)&msg_ele.msg)+i));
+#endif
+			ret = uart_send(*((int*)puart_fd), (((char*)&msg_ele.msg)+i),1);
 			if(-1 == ret){
 				perror("puart_fd fail");
 				return ((void*)(-1));
