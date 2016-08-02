@@ -63,19 +63,21 @@
 #define DEV_LED 0x04
 #define DEV_FAN 0x05
 #define DEV_DOOR 0x06
+#define DEV_STATA 0x07
 
 #define SEM_W 1
 #define SEM_R 0
 
-#define DEBUG
-#define DEBUG1
-#define DEBUG2
+#define DEBUG_MSG_TO_M0
+#define DEBUG_GET_FROM_MO
+
+
 
 #define MSGSZ (sizeof(struct msg_element) - sizeof(long))
 
 struct msg_element{
 	long type;
-	int msg;
+	unsigned char msg[4];
 };
 
 struct pointer_for_M0_data{
@@ -91,15 +93,15 @@ struct clientData{
 };
 
 struct ShareMemeryData{
-	char temperature;
-	char humidity;
-	short illumination;
-	float triaxial[3];
-	char led1;
-	char led2;
-	char fan;
-	char door;
-	char flag;
+	int temperature;
+	int humidity;
+	int illumination;
+	int triaxial[3];
+	int led1;
+	int led2;
+	int fan;
+	int door;
+	int flag;
 };
 
 union semun {
@@ -136,11 +138,12 @@ char* get_string_json_member(json_object*obj,const char*filed,char*strdata);
 
 
 int print_table(void *NotUsed, int argc, char **argv, char **azColName);
-int get_max_user_token(void *pmax_token, int argc, char **argv, char **azColName);
+int get_max_user_ID(void *pmax_token, int argc, char **argv, char **azColName);
 int is_user_name_exist(void *pbool_user_name, int argc, char **argv, char **azColName);
 int get_user_token(void *puserToken, int argc, char **argv, char **azColName);
 int return_user_password(void *puserToken, int argc, char **argv, char **azColName);
-int make_msg(int dev_type,int deviceNumber,int deviceCode);
+unsigned char* make_msg(unsigned char *,unsigned char dev_type,unsigned char deviceNumber,unsigned char deviceCode);
+char * make_json_str(json_object*json_obj_app,int stateCode,char*stateMsg);
 
 int V(int semid, int semnum);
 int P(int semid, int semnum);

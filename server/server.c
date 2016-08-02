@@ -211,12 +211,13 @@ int main(int argc, const char *argv[])
 	if (0 == pid){
 		int ret = 0;
 		int uart_fd = 0;
+		struct msg_element msg_ele;
 		unsigned long pthread_id_shmemery = 0;
 		unsigned long pthread_id_task = 0;
 		//打开串口
-		uart_fd = uart_open("ttys0");
+		uart_fd = uart_open("/dev/ttyUSB0");
 		if(0 == uart_fd){
-			fprintf(stderr,"uart_open fail: %s\n","ttys0");
+			fprintf(stderr,"uart_open fail: %s\n","ttyUSB0");
 			exit(EXIT_FAILURE);
 		}
 		//初始化串口
@@ -235,7 +236,9 @@ int main(int argc, const char *argv[])
 			printf("pthread_detach fail");
 			return -1;
 		}
-
+#ifdef DEBUG_MSG_TO_M0
+		printf("uart_fd:%d\n",uart_fd);
+#endif
 		ret = pthread_create(&pthread_id_task, NULL, tackle_msg, &uart_fd);
 		if(0 != ret){
 			printf("request_thread_work child process fail");
@@ -246,20 +249,17 @@ int main(int argc, const char *argv[])
 			printf("pthread_detach fail");
 			return -1;
 		}
-
-
-#if 0	
-		ret = requst_thread_work(pthread_pool,msgTask,uart_fd);
-		if(-1 == ret){
-			printf("request_thread_work child process fail");
-			return -1;
-		}
-#endif
+		msg_ele.type = 1;
+		make_msg(msg_ele.msg,(unsigned char)DEV_STATA,(unsigned char)0x00,(unsigned char)0x00);
 			
-		
-
-
-
+		while(1){
+			ret = msgsnd(msgid, &msg_ele, MSGSZ,0);
+			if(-1 == ret){
+				perror("msgrcv fail");
+				return -1;
+			}
+			sleep(30);
+		}	
 	}
 
 
