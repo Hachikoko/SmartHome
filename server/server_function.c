@@ -15,9 +15,6 @@ void get_M0_data(void*p){
 	int ret = 0;
 	while(1){
 		ret = P(semid,SEM_R);
-#ifdef DEBUG_GET_FROM_MO
-		printf("void get_M0_data(void*p)");
-#endif
 		if(-1 == ret){
 			fprintf(stderr,"get_M0_data p fail");
 			break;
@@ -36,6 +33,7 @@ void get_M0_data(void*p){
 		pgetM0StructData->door = pshareMemeryData->door;
 		pgetM0StructData->flag = pshareMemeryData->flag;
 #ifdef DEBUG_GET_FROM_MO
+		printf("---------- get_M0_data(void*p)----------\n");
 		printf("gtemperature:%d\n",pgetM0StructData->temperature);
 		printf("ghumidity:%d\n",pgetM0StructData->humidity);
 		printf("gillumination:%d\n",pgetM0StructData->illumination);
@@ -90,20 +88,30 @@ void* read_M0(void *p){
 	int uart_fd = *((int*)p);
 	char data[1024] = {0};
 	json_object*json_obj_data = NULL;
+	FILE *uart_stream = fdopen(uart_fd,"w+");
 	while(1){
+		bzero(data,1024);
 		ret = P(semid,SEM_W);
-#ifdef DEBUG_GET_FROM_MO
-		printf("void* read_M0(void *p)\n");
-#endif
 		if(-1 == ret){
 			fprintf(stderr,"read_M0 P fail");
 			break;
 		}
-		ret = uart_recv(uart_fd, data,1024,NULL);
+       if(NULL == fgets(data, 1024,uart_stream)){
+	   		perror("fgets read_M0 fail");
+			break;
+	   }
+	  	ret = fflush(uart_stream);
+		if(EOF == ret){
+			perror("fflush fail");
+			break;
+		}
+#if 0
+		ret = uart_recv(uart_fd, data,94,NULL);
 		if(-1 == ret){
 			fprintf(stderr,"read_M0,uart_recv fail");
 			break;
 		}
+#endif
 #ifdef DEBUG_GET_FROM_MO
 		printf("uart_recv data:%s\n",data);
 #endif
@@ -117,6 +125,7 @@ void* read_M0(void *p){
 		pshareMemeryData->door = get_int_json_member(json_obj_data,"door");
 		pshareMemeryData->flag = get_int_json_member(json_obj_data,"flag");
 #ifdef DEBUG_GET_FROM_MO
+		printf("---------read_M0(void *p)-----------\n");
 		printf("stemperature:%d\n",pshareMemeryData->temperature);
 		printf("shumidity:%d\n",pshareMemeryData->humidity);
 		printf("sillumination:%d\n",pshareMemeryData->illumination);
@@ -234,23 +243,35 @@ int check_M0_data(struct pointer_for_M0_data FM0Data,int*pdev_stata,int*pdev_num
 		case EVENT_LED:
 			if((pM0Data->flag == 1)&&((*(&pM0Data->led1+(*pdev_num))) == *pdev_stata)){
 				pthread_mutex_unlock(FM0Data.pmutex);
+#ifdef DEBUG_GET_FROM_MO
+				printf("check_M0_data OK\n");
+#endif
 				return 0;
 			}
 			break;
 		case EVENT_FAN:
 			if((pM0Data->flag == 1)&&((*(&pM0Data->fan)) == *pdev_stata)){
 				pthread_mutex_unlock(FM0Data.pmutex);
+#ifdef DEBUG_GET_FROM_MO
+				printf("check_M0_data OK\n");
+#endif
 				return 0;
 			}
 			break;
 		case EVENT_DOOR:
 			if((pM0Data->flag == 1)&&((*(&pM0Data->door)) == *pdev_stata)){
 				pthread_mutex_unlock(FM0Data.pmutex);
+#ifdef DEBUG_GET_FROM_MO
+				printf("check_M0_data OK\n");
+#endif
 				return 0;
 			}
 			break;
 		default:
 			pthread_mutex_unlock(FM0Data.pmutex);
+#ifdef DEBUG_GET_FROM_MO
+				printf("check_M0_data--->fail\n");
+#endif
 			return -1;
 		}
 		pthread_mutex_unlock(FM0Data.pmutex);

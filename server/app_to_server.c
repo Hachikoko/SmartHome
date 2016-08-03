@@ -124,11 +124,17 @@ void do_something(void* p){
 					json_object_object_add(json_obj_app,"deviceState",json_object_new_int(-1));
 					json_obj_app_str = make_json_str(json_obj_app,STATE_FAILE,"time out");
 				}
+#ifdef DEBUG_GET_FROM_MO
+				printf("return to app data : %s\n",json_obj_app_str);
+#endif
 				send_msg_to_app(EVENT_LED,json_obj_app_str,pclientdata->client_fd);
 			}else{
 				json_object_object_add(json_obj_app,"deviceState",json_object_new_int(-1));
 				json_obj_app_str = make_json_str(json_obj_app,STATE_FAILE,"server fail");
 				fprintf(stderr,"send msg to queue fail");
+#ifdef DEBUG_GET_FROM_MO
+				printf("return to app data : %s\n",json_obj_app_str);
+#endif
 				send_msg_to_app(EVENT_LED,json_obj_app_str,pclientdata->client_fd);
 			}
 			break;
@@ -144,11 +150,17 @@ void do_something(void* p){
 					json_object_object_add(json_obj_app,"deviceState",json_object_new_int(-1));
 					json_obj_app_str = make_json_str(json_obj_app,STATE_FAILE,"set fan fail");
 				}
+#ifdef DEBUG_GET_FROM_MO
+				printf("return to app data : %s\n",json_obj_app_str);
+#endif
 				send_msg_to_app(EVENT_FAN,json_obj_app_str,pclientdata->client_fd);
 			}else{
 				json_object_object_add(json_obj_app,"deviceState",json_object_new_int(1));
 				json_obj_app_str = make_json_str(json_obj_app,STATE_FAILE,"server fail");
 				fprintf(stderr,"send msg to queue fail");
+#ifdef DEBUG_GET_FROM_MO
+				printf("return to app data : %s\n",json_obj_app_str);
+#endif
 				send_msg_to_app(EVENT_FAN,json_obj_app_str,pclientdata->client_fd);
 			}
 
@@ -165,11 +177,17 @@ void do_something(void* p){
 					json_object_object_add(json_obj_app,"deviceState",json_object_new_int(-1));
 					json_obj_app_str = make_json_str(json_obj_app,STATE_FAILE,"set door fail");
 				}
+#ifdef DEBUG_GET_FROM_MO
+				printf("return to app data : %s\n",json_obj_app_str);
+#endif
 				send_msg_to_app(EVENT_DOOR,json_obj_app_str,pclientdata->client_fd);
 			}else{
 				json_object_object_add(json_obj_app,"deviceState",json_object_new_int(1));
 				json_obj_app_str = make_json_str(json_obj_app,STATE_FAILE,"server fail");
 				fprintf(stderr,"send msg to queue fail");
+#ifdef DEBUG_GET_FROM_MO
+				printf("return to app data : %s\n",json_obj_app_str);
+#endif
 				send_msg_to_app(EVENT_DOOR,json_obj_app_str,pclientdata->client_fd);
 			}
 
@@ -188,6 +206,9 @@ void do_something(void* p){
 			}else{
 				json_obj_app_str = make_json_str(json_obj_app,STATE_FAILE,"get stata fail");
 			}
+#ifdef DEBUG_GET_FROM_MO
+				printf("return to app data : %s\n",json_obj_app_str);
+#endif
 			send_msg_to_app(EVENT_GET_DEVICE_STATE,json_obj_app_str,pclientdata->client_fd);
 
 			break;
