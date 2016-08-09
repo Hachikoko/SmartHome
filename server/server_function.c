@@ -96,7 +96,7 @@ void* read_M0(void *p){
 			fprintf(stderr,"read_M0 P fail");
 			break;
 		}
-       if(NULL == fgets(data, 1024,uart_stream)){
+       if(NULL == fgets(data, 96,uart_stream)){
 	   		perror("fgets read_M0 fail");
 			break;
 	   }

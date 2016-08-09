@@ -24,6 +24,11 @@ void do_something(void* p){
 
 	short json_len = *((short*)(&pclientdata->data[2]));
 	strncpy(json_data,(pclientdata->data + 4),strlen(&pclientdata->data[4]) + 1);
+#ifdef DEBUG_GET_FROM_APP
+	printf("type:%x\n",pclientdata->data[0]);
+	printf("fun_num:%x\n",pclientdata->data[1]);
+	printf("json_data:%s\n",json_data);
+#endif
 	memset(pclientdata->data + 4,0,1020);
 	if(0xaa != pclientdata->data[0]){
 		printf("wrong data type\n");
@@ -702,7 +707,7 @@ struct ShareMemeryData get_device_state(char*json_data,int json_len){
 		pthread_mutex_lock(FM0Data.pmutex);
 		temp.temperature = pM0Data->temperature;
 		temp.humidity = pM0Data->humidity;
-		temp.illumination = pM0Data->humidity;
+		temp.illumination = pM0Data->illumination;
 		temp.triaxial[0] = pM0Data->triaxial[0];
 		temp.triaxial[1] = pM0Data->triaxial[1];
 		temp.triaxial[2] = pM0Data->triaxial[2];

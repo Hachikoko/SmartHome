@@ -70,6 +70,7 @@
 
 #define DEBUG_MSG_TO_M0
 #define DEBUG_GET_FROM_MO
+#define DEBUG_GET_FROM_APP
 
 
 
